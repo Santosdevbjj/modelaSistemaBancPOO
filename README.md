@@ -4,7 +4,7 @@
 ![PythonDeveloper001](https://github.com/user-attachments/assets/55d38907-069b-4065-8edf-831058a70fb7) 
 
 
-Bootcamp 
+**Bootcamp Luizalabs - Back-end com Python**
 
 ---
 
@@ -79,7 +79,7 @@ O código foi dividido em módulos para organizar as **entidades do sistema** (`
 
 ## 💻 **Requisitos de Software e Hardware**
 
-## 🧰 **Software**
+##  **Software**
 - **Sistema Operacional:** Windows, macOS ou Linux  
 - **Python:** Versão 3.8 ou superior (Recomendado: 3.10+)
 
