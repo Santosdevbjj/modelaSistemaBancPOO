@@ -37,7 +37,9 @@ Com isso, o sistema garante **modularidade**, **encapsulamento**, **herança** e
 
 O projeto foi modelado a partir do seguinte **diagrama UML**, que define todas as classes, atributos, métodos e relações entre entidades:
 
-![Diagrama UML do Sistema Bancário](https://github.com/Santosdevbjj/modelaSistemaBancPOO/assets/uml_diagrama_exemplo) <!-- Substituir por URL da imagem real do repositório, se quiser -->
+
+<img width="2400" height="1080" alt="UML" src="https://github.com/user-attachments/assets/53b784af-45cd-40d3-b41f-82cdc61024d2" />
+
 
 ---
 
@@ -81,7 +83,7 @@ O código foi dividido em módulos para organizar as **entidades do sistema** (`
 - **Sistema Operacional:** Windows, macOS ou Linux  
 - **Python:** Versão 3.8 ou superior (Recomendado: 3.10+)
 
-### 🧠 **Hardware**
+###  **Hardware**
 - **CPU:** 1.0 GHz ou superior  
 - **RAM:** 512 MB livres  
 - **Disco:** < 1 MB
