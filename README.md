@@ -53,7 +53,7 @@ O código foi dividido em módulos para organizar as **entidades do sistema** (`
 ---
 
 
-### 📂 **Descrição das Pastas**
+## 📂 **Descrição das Pastas**
 
 | Pasta | Descrição |
 |-------|-----------|
@@ -79,22 +79,22 @@ O código foi dividido em módulos para organizar as **entidades do sistema** (`
 
 ## 💻 **Requisitos de Software e Hardware**
 
-### 🧰 **Software**
+## 🧰 **Software**
 - **Sistema Operacional:** Windows, macOS ou Linux  
 - **Python:** Versão 3.8 ou superior (Recomendado: 3.10+)
 
-###  **Hardware**
+##  **Hardware**
 - **CPU:** 1.0 GHz ou superior  
 - **RAM:** 512 MB livres  
 - **Disco:** < 1 MB
 
 ---
 
-## ▶️ **Como Executar o Sistema**
+ ▶️ **Como Executar o Sistema**
 
 Siga os passos abaixo para baixar e rodar o projeto em seu ambiente local:
 
-### 1. Clonar o Repositório
+## 1. Clonar o Repositório
 
 ```bash
 git clone https://github.com/Santosdevbjj/modelaSistemaBancPOO.git
@@ -107,13 +107,13 @@ cd modelaSistemaBancPOO
 **Criar Ambiente Virtual**
 
 
-# Cria o ambiente virtual
+ **Cria o ambiente virtual**
 python -m venv venv
 
-# Ativa o ambiente virtual (Linux/macOS)
+ **Ativa o ambiente virtual (Linux/macOS)**
 source venv/bin/activate
 
-# Ativa o ambiente virtual (Windows)
+ **Ativa o ambiente virtual (Windows)**
 .\venv\Scripts\activate
 
 
