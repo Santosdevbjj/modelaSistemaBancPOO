@@ -1,0 +1,29 @@
+# Arquivos de cache do Python (pastas __pycache__)
+__pycache__/
+
+# Arquivos de bytecode compilado (.pyc)
+*.pyc
+
+# Arquivos de logs
+*.log
+
+# Ambientes virtuais (muito comuns em projetos Python)
+# Ignora pastas de ambiente virtual padrão: venv, env, .venv
+venv/
+env/
+.venv/
+
+# Ignora dependências instaladas (se você usar pip install -t .)
+# site-packages/
+
+# Configurações e Histórico do IPython/Jupyter (se usados para testes)
+.ipynb_checkpoints
+.ipython/
+
+# Arquivos temporários de editores comuns
+*~
+.DS_Store # Arquivos do macOS
+
+# Arquivos específicos do IDE (ex: VS Code)
+.vscode/
+
