@@ -1,201 +1,264 @@
-## Modelando o Sistema Bancário em POO com Python.
+# Sistema Bancário em Python: Refatoração de Código Procedural para Arquitetura POO com UML
 
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat&logo=python&logoColor=white)
+![POO](https://img.shields.io/badge/Paradigma-POO-F97316?style=flat)
+![UML](https://img.shields.io/badge/Modelagem-UML-8B5CF6?style=flat)
+![Status](https://img.shields.io/badge/Status-Concluído-22C55E?style=flat)
+![MIT License](https://img.shields.io/badge/Licença-MIT-6B7280?style=flat)
 
-![PythonDeveloper001](https://github.com/user-attachments/assets/55d38907-069b-4065-8edf-831058a70fb7) 
-
-
-**Bootcamp Luizalabs - Back-end com Python**
-
----
-
-
-# 🏦 Modelagem de Sistema Bancário em POO com Python
-
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg?logo=python&logoColor=white)
-![POO](https://img.shields.io/badge/Paradigma-POO-orange)
-![Status](https://img.shields.io/badge/Status-Concluído-brightgreen)
-![GitHub last commit](https://img.shields.io/github/last-commit/Santosdevbjj/modelaSistemaBancPOO)
-![License](https://img.shields.io/badge/Licença-MIT-lightgrey)
+> Refatoração completa de sistema bancário procedural para arquitetura orientada a objetos, guiada por diagrama UML: encapsulamento, herança, polimorfismo e composição implementados em Python com separação de domínio e serviços.
 
 ---
 
-## 📌 **Visão Geral do Projeto**
+## 1. Problema de Negócio
 
-Este projeto consiste na **refatoração de um sistema bancário simples**, inicialmente procedural, para um modelo completamente baseado em **Programação Orientada a Objetos (POO)** utilizando Python.
+Sistemas bancários começam simples — funções soltas, variáveis globais, lógica de saque misturada com validação de saldo misturada com exibição de menu. Essa abordagem procedural funciona enquanto o sistema é pequeno. À medida que regras de negócio crescem — limites por tipo de conta, diferentes perfis de cliente, múltiplos tipos de transação — o código procedural se torna um risco: cada nova regra precisa ser adicionada em múltiplos lugares, qualquer mudança pode quebrar comportamentos não relacionados, e não há forma segura de testar componentes isoladamente.
 
-A arquitetura segue rigorosamente um **diagrama UML**, implementando classes como:
-
-- `Cliente` e `PessoaFisica`  
-- `Conta` e `ContaCorrente`  
-- `Transacao` (Interface), `Deposito` e `Saque`  
-
-Com isso, o sistema garante **modularidade**, **encapsulamento**, **herança** e **polimorfismo**, tornando-se mais próximo de um design profissional e sustentável.
+O desafio central deste projeto é demonstrar, com código real e modelagem UML explícita, como a refatoração para **Programação Orientada a Objetos** transforma um sistema frágil e acoplado em uma arquitetura onde cada responsabilidade tem um lugar definido, regras de negócio estão encapsuladas nas entidades corretas e novas funcionalidades podem ser adicionadas sem reescrever o que já funciona.
 
 ---
 
-## 🧭 **Diagrama UML**
+## 2. Contexto
 
-O projeto foi modelado a partir do seguinte **diagrama UML**, que define todas as classes, atributos, métodos e relações entre entidades:
+O projeto foi desenvolvido no **Bootcamp Luizalabs — Back-end com Python**, com objetivo de ir além da implementação e construir o ciclo completo de engenharia de software: modelagem UML → design de classes → implementação → separação de responsabilidades.
 
+O domínio bancário foi escolhido por ser rico em padrões de OOP aplicáveis diretamente: clientes com múltiplas contas (agregação), contas com histórico de transações (composição), diferentes tipos de transação com interface comum (polimorfismo), e regras específicas por tipo de conta como limites e contadores de saque (herança com override).
 
-<img width="2400" height="1080" alt="UML" src="https://github.com/user-attachments/assets/53b784af-45cd-40d3-b41f-82cdc61024d2" />
-
-
----
-
-## 🏗️ **Estrutura e Arquitetura do Projeto**
-
-O código foi dividido em módulos para organizar as **entidades do sistema** (`models`) e as **funcionalidades de suporte** (`services`), conforme a estrutura típica de projetos Python:  
-
-
-<img width="1011" height="765" alt="Screenshot_20251010-041717" src="https://github.com/user-attachments/assets/a4d1e974-d3bc-48db-b46a-11171ba11954" /> 
+A arquitetura final separa o **domínio** (`src/models/`) dos **serviços auxiliares** (`src/services/`) — estrutura equivalente à camada de domínio + camada de apresentação em aplicações de produção.
 
 ---
 
+## 3. Premissas
 
-## 📂 **Descrição das Pastas**
-
-| Pasta | Descrição |
-|-------|-----------|
-| `src/` | Código fonte principal do projeto, separando lógica de domínio da execução. |
-| `src/models/` | Contém as classes principais do domínio bancário (Cliente, Conta, Transação). É o núcleo da POO. |
-| `src/services/` | Contém utilitários e menus auxiliares, não relacionados diretamente às entidades. |
-| `main.py` | Ponto de entrada do sistema, gerencia o loop principal de execução. |
-| `.gitignore` | Ignora arquivos desnecessários como `__pycache__` e ambientes virtuais. |
+- O diagrama UML define o contrato de design: nenhuma classe, atributo ou método foi adicionado sem correspondência no diagrama. A implementação segue o modelo, não o contrário.
+- `ContaCorrente` aplica limite por transação de R$ 500,00 e máximo de 3 saques diários — regras fixadas como parâmetros default no construtor, alteráveis por instância sem modificar a classe.
+- A classe `Transacao` é abstrata (`ABC`) com método `registrar(conta)` obrigatório — qualquer nova transação (transferência, PIX, tarifa) deve implementar esse contrato para ser aceita pelo sistema.
+- Cada transação se registra no histórico da conta (`conta.historico.adicionar_transacao(self)`) ao invés de ser registrada externamente — o objeto de transação é responsável por seu próprio registro, mantendo o histórico sempre consistente com as operações bem-sucedidas.
+- O sistema usa listas em memória (`clientes`, `contas`) sem persistência — decisão de escopo que isola o aprendizado de OOP sem dependência de banco de dados. A camada de persistência é o próximo passo natural.
 
 ---
 
-## 📝 **Detalhamento dos Arquivos e Conceitos de POO**
+## 4. Estratégia da Solução
 
-| Arquivo | Localização | Descrição e Conceitos de POO |
-|---------|-------------|-------------------------------|
-| `cliente.py` | `src/models/` | Define a classe base `Cliente` e a especializada `PessoaFisica` (Herança). Contém lista de contas (Agregação) e método `realizar_transacao()`. |
-| `conta.py` | `src/models/` | Define `Conta` e `ContaCorrente` (Herança). Implementa regras de limite e saques (Polimorfismo). Inclui a classe `Historico` para composição de transações. |
-| `transacao.py` | `src/models/` | Define interface `Transacao` (classe abstrata) e implementações concretas `Deposito` e `Saque`. Demonstra Polimorfismo. |
-| `utils.py` | `src/services/` | Funções auxiliares de interação, menu e exibição de extratos. |
-| `main.py` | Raiz | Gerencia inicialização do sistema e interação com o usuário. |
+### 4.1 Diagrama UML como Contrato de Design
 
----
+O diagrama UML define cinco classes principais com suas relações:
 
-## 💻 **Requisitos de Software e Hardware**
-
-##  **Software**
-- **Sistema Operacional:** Windows, macOS ou Linux  
-- **Python:** Versão 3.8 ou superior (Recomendado: 3.10+)
-
-##  **Hardware**
-- **CPU:** 1.0 GHz ou superior  
-- **RAM:** 512 MB livres  
-- **Disco:** < 1 MB
-
----
-
- ▶️ **Como Executar o Sistema**
-
-Siga os passos abaixo para baixar e rodar o projeto em seu ambiente local:
-
-## 1. Clonar o Repositório
-
-```bash
-git clone https://github.com/Santosdevbjj/modelaSistemaBancPOO.git
-cd modelaSistemaBancPOO
-
-
----
+```
+Cliente ◄────────────── PessoaFisica
+   │ (agregação)
+   └──── [Conta] ◄───── ContaCorrente
+              │ (composição)
+              └──── Historico
+                       │
+                    [Transacao] ◄── Deposito
+                                 ◄── Saque
 ```
 
-**Criar Ambiente Virtual**
+- **Herança:** `PessoaFisica → Cliente`, `ContaCorrente → Conta`
+- **Composição:** `Conta` possui um `Historico` — o histórico não existe sem a conta
+- **Agregação:** `Cliente` referencia múltiplas `Conta` — contas podem existir independentemente
+- **Interface (ABC):** `Transacao` define contrato; `Deposito` e `Saque` implementam
 
+### 4.2 Estrutura de Arquivos
 
- **Cria o ambiente virtual**
+```
+modelando-sistema-bancario-em-POO/
+├── main.py                    → Ponto de entrada, loop principal, orquestração
+├── src/
+│   ├── models/
+│   │   ├── cliente.py         → Classes Cliente e PessoaFisica (herança, encapsulamento)
+│   │   ├── conta.py           → Classes Historico, Conta e ContaCorrente (composição, polimorfismo)
+│   │   └── transacao.py       → Interface Transacao (ABC), Deposito e Saque
+│   └── services/
+│       └── utils.py           → Menu, exibição de extrato, logging (sem lógica de domínio)
+└── .gitignore
+```
+
+### 4.3 Os Quatro Pilares de POO Implementados
+
+**Encapsulamento:** atributos com prefixo `_` acessados exclusivamente via `@property`. O saldo (`_saldo`) só é alterado pelos métodos `depositar()` e `sacar()` — nenhum código externo modifica o estado da conta diretamente.
+
+```python
+@property
+def saldo(self):
+    return self._saldo  # Leitura pública, escrita protegida
+```
+
+**Herança com override:** `ContaCorrente.sacar()` estende `Conta.sacar()` sem duplicar código — valida limites específicos e delega a operação base via `super().sacar(valor)`:
+
+```python
+def sacar(self, valor):
+    excedeu_limite = valor > self.limite          # Regra específica de ContaCorrente
+    excedeu_saques = self._numero_saques >= self.limite_saques  # Regra específica
+
+    if excedeu_limite:
+        print(f"@@@ Limite por saque: R$ {self.limite:.2f} @@@")
+    elif excedeu_saques:
+        print("@@@ Limite de saques diários atingido @@@")
+    elif super().sacar(valor):                    # Delega para Conta.sacar()
+        self._numero_saques += 1
+        return True
+    return False
+```
+
+**Polimorfismo:** `cliente.realizar_transacao(conta, transacao)` aceita qualquer objeto que implemente `Transacao.registrar()` — `Deposito`, `Saque` ou qualquer futura transação:
+
+```python
+def realizar_transacao(self, conta, transacao):
+    return transacao.registrar(conta)  # Polimorfismo: Deposito ou Saque, mesma interface
+```
+
+**Composição:** `Conta` cria e possui seu `Historico` internamente — o histórico não pode existir sem a conta, e é destruído junto com ela:
+
+```python
+def __init__(self, numero, cliente):
+    self._historico = Historico()  # Composição: Historico criado dentro de Conta
+```
+
+### 4.4 Fluxo Completo de uma Transação
+
+```
+main.py                    cliente.py              transacao.py         conta.py
+   │                           │                       │                   │
+   ├─ saque = Saque(valor)     │                       │                   │
+   ├─ cliente.realizar_transacao(conta, saque)          │                   │
+   │        │                  │                       │                   │
+   │        └─ transacao.registrar(conta) ─────────────►                   │
+   │                                                   ├─ conta.sacar() ──►│
+   │                                                   │    ◄── True        │
+   │                                                   └─ conta.historico.adicionar_transacao(self)
+```
+
+---
+
+## 5. Decisões Técnicas
+
+### Por que `Transacao` como classe abstrata (`ABC`) ao invés de classe concreta ou protocolo?
+
+`ABC` com `@abstractmethod` garante em tempo de instanciação que qualquer subclasse implemente `registrar(conta)` e `valor`. Se um desenvolvedor criar `Transferencia(Transacao)` sem implementar `registrar`, Python lança `TypeError` imediatamente — antes de qualquer execução. Protocolo (`Protocol`) seria mais flexível, mas menos explícito sobre o contrato. Para um sistema bancário onde transações incompletas são inaceitáveis, o contrato explícito via `ABC` é a escolha correta.
+
+### Por que a transação se registra no histórico ao invés do cliente ou da conta fazerem isso?
+
+A alternativa seria `conta.historico.adicionar_transacao(transacao)` chamado em `main.py` após cada operação. O problema: se o desenvolvedor esquecer essa linha, a operação ocorre mas não é registrada — inconsistência silenciosa. Ao delegar ao próprio objeto `Deposito`/`Saque` a responsabilidade de se registrar (`conta.historico.adicionar_transacao(self)` dentro de `registrar()`), o registro é inseparável da operação. Não há como realizar uma transação sem registrá-la.
+
+### Por que separar `src/models/` e `src/services/`?
+
+`models/` contém entidades de domínio puro — sem `print`, sem lógica de apresentação, sem dependência de interface. `services/` contém tudo que depende de como o sistema interage com o usuário. Essa separação permite trocar a interface (de CLI para API REST, por exemplo) sem tocar nas regras de negócio. O método `exibir_extrato(conta)` em `utils.py` acessa `conta.historico.transacoes` e `conta.saldo` via interface pública — sem conhecer os detalhes internos da conta.
+
+### Por que `nova_conta` como `@classmethod` ao invés de construtor direto?
+
+`ContaCorrente.nova_conta(cliente=cliente, numero=numero_conta)` é um Factory Method simples: centraliza a lógica de criação e torna a assinatura mais legível com parâmetros nomeados. Para subclasses futuras (`ContaPoupanca`, `ContaSalario`), cada uma pode ter seu próprio `nova_conta` com parâmetros específicos sem alterar a interface de criação em `main.py`.
+
+---
+
+## 6. Insights
+
+A refatoração de procedural para OOP revelou padrões com impacto direto em sistemas de maior escala:
+
+**A lógica de `super().sacar(valor)` em `ContaCorrente` elimina duplicação crítica:** a versão procedural validava saldo em dois lugares — na função de saque e em cada verificação de limite. Com herança, `Conta.sacar()` valida saldo e `ContaCorrente.sacar()` valida limites, chamando `super()` para a validação base. Cada regra vive em exatamente um lugar.
+
+**Encapsulamento revela contratos implícitos:** ao proteger `_saldo` com `@property` sem setter, fica imediatamente óbvio que saldo só muda via `depositar()` ou `sacar()`. Na versão procedural, `saldo` era uma variável modificável de qualquer ponto — o histórico e o saldo podiam ficar dessincronizados sem nenhum aviso.
+
+**A composição `Conta → Historico` foi a decisão de design mais impactante:** na versão procedural, o extrato era uma lista global. Com composição, cada conta carrega seu próprio histórico, isolado e consistente. Isso permite no futuro ter múltiplas contas por cliente sem risco de transações de uma conta aparecerem no extrato de outra.
+
+**O filtro de cliente por CPF via list comprehension é O(n):** para o escopo atual, adequado. Em produção com milhares de clientes, isso migraria para um dicionário `{cpf: cliente}` — lookup O(1). A estrutura de domínio (`cliente.cpf`) já está correta para essa migração; apenas `filtrar_cliente()` em `main.py` precisaria ser alterado.
+
+---
+
+## 7. Resultados
+
+- **Arquitetura POO completa** guiada por diagrama UML com cinco classes, dois relacionamentos de herança, uma composição, uma agregação e uma interface abstrata.
+
+- **Quatro pilares de OOP demonstrados com código real:** encapsulamento via `@property`, herança com `super()` em `ContaCorrente.sacar()`, polimorfismo via `Transacao.registrar()` e composição em `Conta → Historico`.
+
+- **Regras de negócio encapsuladas nas entidades corretas:** limite de R$ 500 e máximo de 3 saques diários vivem em `ContaCorrente`, não em `main.py` — qualquer parte do sistema que use `ContaCorrente.sacar()` automaticamente respeita essas regras.
+
+- **Auto-registro de transações:** `Deposito` e `Saque` se registram no histórico da conta ao executar `registrar()` — impossível realizar operação sem registrá-la, eliminando a classe de bugs de inconsistência entre saldo e extrato.
+
+- **Arquitetura extensível:** adicionar `ContaPoupanca` com rendimento mensal exige apenas uma nova subclasse de `Conta`. Adicionar `Transferencia` exige apenas uma nova subclasse de `Transacao`. Nenhuma das classes existentes precisa ser modificada.
+
+---
+
+## 8. Tecnologias Utilizadas
+
+| Tecnologia | Papel no Projeto |
+|---|---|
+| Python 3.8+ | Linguagem principal, OOP, ABC, `@property`, `@classmethod` |
+| `abc.ABC` + `@abstractmethod` | Interface `Transacao` — contrato obrigatório para subclasses |
+| `textwrap.dedent` | Formatação de strings multilinhas no menu e extrato |
+| Git / GitHub | Versionamento e hospedagem do repositório |
+
+---
+
+## 9. Como Executar
+
+**Pré-requisito:** Python 3.8+
+
+```bash
+# Clone o repositório
+git clone https://github.com/Santosdevbjj/modelando-sistema-bancario-em-POO.git
+cd modelando-sistema-bancario-em-POO
+
+# (Opcional) Crie e ative um ambiente virtual
 python -m venv venv
+source venv/bin/activate   # Linux/macOS
+.\venv\Scripts\activate    # Windows
 
- **Ativa o ambiente virtual (Linux/macOS)**
-source venv/bin/activate
-
- **Ativa o ambiente virtual (Windows)**
-.\venv\Scripts\activate
-
-
----
-
-**Executar o Programa**
-
+# Execute o sistema
 python main.py
+```
 
+**Menu interativo disponível:**
 
----
+```
+[nu]  Novo usuário      → Cria objeto PessoaFisica com CPF, nome, data e endereço
+[nc]  Nova conta        → Cria ContaCorrente associada a um cliente por CPF
+[d]   Depositar         → Instancia Deposito(valor) e registra na conta
+[s]   Sacar             → Instancia Saque(valor) com validação de limite e contador
+[e]   Extrato           → Exibe histórico de transações e saldo atual
+[lc]  Listar contas     → Exibe todas as contas via __str__ de ContaCorrente
+[q]   Sair
+```
 
+**Fluxo de teste rápido:**
 
-**Interagir com o Sistema**
-
-No terminal, será exibido o menu com opções como:
-
-[nu] Novo Usuário
-
-[nc] Nova Conta
-
-[d] Depósito
-
-[s] Saque
-
-[e] Extrato
-
-[q] Sair
-
-
-
----
-
- **Conceitos de POO Aplicados**
-
-Este projeto é um estudo prático e completo de POO, abordando:
-
-**Encapsulamento:** atributos privados acessados por @property, protegendo o estado interno.
-
-**Herança:** PessoaFisica herda de Cliente; ContaCorrente herda de Conta.
-
-**Polimorfismo:** Interface Transacao exige implementação de registrar(). Saque e Deposito têm comportamentos distintos.
-
-**Agregação/Composição:**
-
-Cliente agrega múltiplas contas.
-
-Conta possui um Historico (Composição), definindo ciclo de vida entre objetos.
-
-
-
+```
+1. [nu] → Criar cliente com CPF 12345678900
+2. [nc] → Criar conta para CPF 12345678900
+3. [d]  → Depositar R$ 1000,00
+4. [s]  → Sacar R$ 200,00 (dentro do limite)
+5. [s]  → Sacar R$ 600,00 (excede limite de R$ 500 — deve falhar)
+6. [e]  → Verificar extrato: Deposito R$ 1000 + Saque R$ 200 = Saldo R$ 800
+```
 
 ---
 
- **Objetivo Didático**
+## 10. Aprendizados
 
-Este repositório foi desenvolvido com foco educacional, servindo como modelo de arquitetura POO para estudantes e profissionais que desejam evoluir de códigos procedurais para projetos bem estruturados e orientados a objetos.
+**O maior aprendizado foi entender quando usar herança versus composição.** A tentação inicial foi colocar `historico` como atributo de `Cliente` — afinal, o cliente "tem" um histórico. O modelo UML mostrou o erro: o histórico pertence à `Conta`, não ao cliente. Um cliente com duas contas tem dois históricos separados. Essa distinção só ficou clara ao modelar as relações no diagrama antes de escrever código.
 
+**Sobre `super()` em herança:** a primeira versão de `ContaCorrente.sacar()` copiou toda a lógica de `Conta.sacar()` e adicionou as verificações de limite. Essa duplicação significava que qualquer bug corrigido em `Conta.sacar()` precisaria ser corrigido também em `ContaCorrente.sacar()`. A refatoração para `super().sacar(valor)` reduziu `ContaCorrente.sacar()` a apenas suas responsabilidades exclusivas — um exemplo concreto de como herança reduz duplicação.
 
----
-
-📝 **Licença**
-
-Este projeto está sob a licença MIT.
-
+**O que faria diferente hoje:** implementaria persistência com SQLite desde o início — o design de domínio já está correto para isso, `Cliente` e `Conta` precisariam apenas de um repositório que serialize os objetos. Adicionaria também `pytest` com fixtures para testar `ContaCorrente.sacar()` nos cenários de limite excedido, saques esgotados e saldo insuficiente — os três casos críticos que o sistema bancário não pode errar.
 
 ---
 
-👤 **Autor**
+## 11. Próximos Passos
 
-Sérgio Santos
-
-
----
-
-**Contato:**
-
-
-[![Portfólio Sérgio Santos](https://img.shields.io/badge/Portfólio-Sérgio_Santos-111827?style=for-the-badge&logo=githubpages&logoColor=00eaff)](https://santosdevbjj.github.io/portfolio/)
-[![LinkedIn Sérgio Santos](https://img.shields.io/badge/LinkedIn-Sérgio_Santos-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/santossergioluiz) 
-
+- Implementar persistência com SQLite ou JSON, serializando os objetos de domínio sem alterar as classes de modelo
+- Adicionar `ContaPoupanca` com taxa de rendimento mensal como nova subclasse de `Conta` — demonstrando extensibilidade sem modificação de código existente
+- Implementar `Transferencia(Transacao)` que debita de uma conta e credita em outra dentro de `registrar()`
+- Adicionar suíte de testes com `pytest`: cenários de saque com limite excedido, saldo insuficiente e contador de saques esgotado
+- Substituir lista `clientes` por dicionário `{cpf: cliente}` para lookup O(1) em vez de O(n)
+- Expor o sistema como API REST com FastAPI, mantendo `src/models/` intocado — mudando apenas a camada de interface
 
 ---
 
+## Autor
 
+**Sergio Santos** — Senior Data Engineer & Cloud Architect
+
+[![Portfólio](https://img.shields.io/badge/Portfólio-Sérgio_Santos-111827?style=for-the-badge&logo=githubpages&logoColor=00eaff)](https://portfoliosantossergio.vercel.app)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Sérgio_Santos-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/santossergioluiz)
+[![GitHub](https://img.shields.io/badge/GitHub-Santosdevbjj-24292f?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Santosdevbjj)
